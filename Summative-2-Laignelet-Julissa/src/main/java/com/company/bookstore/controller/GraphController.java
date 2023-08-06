@@ -47,6 +47,11 @@ public class GraphController {
         return publisherRepository.findById(id).orElse(null);
     }
 
+    @QueryMapping
+    public List<Book> allBooks() {
+        return bookRepository.findAll();
+    }
+
     @MutationMapping
     public Publisher addPublisher (
             @Argument int id,
@@ -58,7 +63,7 @@ public class GraphController {
             @Argument String phone,
             @Argument String email
     ) {
-        Publisher newPublisher = new Publisher(name, street, city, state, postalCode, phone, email);
+        Publisher newPublisher = new Publisher(id, name, street, city, state, postalCode, phone, email);
         return publisherRepository.save(newPublisher);
     }
 
@@ -75,6 +80,7 @@ public class GraphController {
     ) {
         Publisher updatePublisher = publisherRepository.findById(id).orElseThrow();
 
+        updatePublisher.setId(id);
         updatePublisher.setName(name);
         updatePublisher.setStreet(street);
         updatePublisher.setCity(city);
@@ -101,10 +107,9 @@ public class GraphController {
             @Argument String postalCode,
             @Argument String phone,
             @Argument String email) {
-        Author newAuthor = new Author(firstName, lastName, street, city, state, postalCode, phone, email);
+        Author newAuthor = new Author(id, firstName, lastName, street, city, state, postalCode, phone, email);
         return authorRepository.save(newAuthor);
     }
-
 
     @MutationMapping
     public Author updateAuthor(
@@ -141,21 +146,21 @@ public class GraphController {
 
     @MutationMapping
     public Book addBook(
-            @Argument int id,
             @Argument String isbn,
             @Argument String publishDate,
-            @Argument Author author,
+            @Argument int authorId,
             @Argument String title,
-            @Argument Publisher publisher,
+            @Argument int publisherId,
             @Argument double price
     ) {
-        //makes sures Author and publishers exist
-        Author checkAuthor = authorRepository.findById(author.getAuthorId()).orElseThrow();
-        Publisher checkPublisher = publisherRepository.findById(publisher.getPublisherId()).orElseThrow();
+        // Check if Author and Publisher exist based on the provided IDs
+        Author author = authorRepository.findById(authorId).orElseThrow();
+        Publisher publisher = publisherRepository.findById(publisherId).orElseThrow();
 
         Book newBook = new Book(isbn, publishDate, author, title, publisher, price);
         return bookRepository.save(newBook);
     }
+
 
     @MutationMapping
     public Book updateBook(

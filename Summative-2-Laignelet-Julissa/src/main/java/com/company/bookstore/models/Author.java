@@ -11,9 +11,10 @@ import javax.persistence.Table;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name="author")
+@Table(name="Author")
 public class Author {
     @Id
+    @Column(name="author_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName;
